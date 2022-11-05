@@ -71,34 +71,21 @@ void wireBox(GLdouble width, GLdouble height, GLdouble depth) {
 	glPopMatrix();
 }
 
-// Displays the arm in its current position and orientation.  The whole
-// function is bracketed by glPushMatrix and glPopMatrix calls because every
-// time we call it we are in an "environment" in which a gluLookAt is in
-// effect.  (Note that in particular, replacing glPushMatrix with
-// glLoadIdentity makes you lose the camera setting from gluLookAt).
-void display() {
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-
-	glLoadIdentity();
-	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
-		0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0);
-
+void drawLeftArm(GLfloat centerDist=1.0) {
 	glPushMatrix();
+
 	glColor3f(1.0, 0.0, 0.0);
 	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
 	// the thing about glutWireBox is that normally its origin is in the middle
 	// of the box, but we want the "origin" of our box to be at the left end of
 	// the box, so it needs to first be shifted 1 unit in the x direction, then
 	// rotated.
-	glTranslatef(0.0, 0.0, -1.0); // shift entire arm in -z direction
+	glTranslatef(0.0, 0.0, -centerDist); // shift entire arm in -z direction
 	glRotatef((GLfloat)shoulderOpenAngle, 1.0, 0.0, 0.0);
 	glRotatef((GLfloat)shoulderAngle, 0.0, 1.0, 0.0);
 	glRotatef((GLfloat)shoulderX2Angle, 1.0, 0.0, 0.0);
 	glTranslatef(1.0, 0.0, 0.0);
-	
+
 	wireBox(2.0, 0.4, 1.0);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
@@ -113,15 +100,13 @@ void display() {
 	glRotatef((GLfloat)elbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(1.0, 0.0, 0.0);
 	wireBox(2.0, 0.4, 1.0);
-	
+
 	glTranslatef(3.0, 0.0, 0.0);
 
 	glPopMatrix();
+}
 
-	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
-
-
-	//right
+void drawRightArm(GLfloat centerDist=1.0) {
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
 
@@ -130,12 +115,12 @@ void display() {
 	// of the box, but we want the "origin" of our box to be at the left end of
 	// the box, so it needs to first be shifted 1 unit in the x direction, then
 	// rotated.
-	glTranslatef(0.0, 0.0, 1.0); // shift entire arm in -z direction
+	glTranslatef(0.0, 0.0, centerDist); // shift entire arm in z direction
 	glRotatef((GLfloat)-shoulderOpenAngle, 1.0, 0.0, 0.0);
 	glRotatef((GLfloat)-shoulderAngle, 0.0, 1.0, 0.0);
 	glRotatef((GLfloat)-shoulderX2Angle, 1.0, 0.0, 0.0);
 	glTranslatef(1.0, 0.0, 0.0);
-	
+
 	wireBox(2.0, 0.4, 1.0);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
@@ -152,6 +137,40 @@ void display() {
 	wireBox(2.0, 0.4, 1.0);
 
 	glPopMatrix();
+}
+
+void drawTorso() {
+	glPushMatrix();
+	glColor3f(0.0, 0.0, 1.0);
+	glTranslatef(0.0, -2.0, 0);
+	glRotatef(90.0, 0, 1, 0);
+	wireBox(3.0, 5., 1.0);
+	glPopMatrix();
+}
+
+// Displays the arm in its current position and orientation.  The whole
+// function is bracketed by glPushMatrix and glPopMatrix calls because every
+// time we call it we are in an "environment" in which a gluLookAt is in
+// effect.  (Note that in particular, replacing glPushMatrix with
+// glLoadIdentity makes you lose the camera setting from gluLookAt).
+void display() {
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+
+	glLoadIdentity();
+	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
+		0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0);
+
+
+	drawLeftArm(1.5);
+	drawRightArm(1.5);
+	drawTorso();
+
+	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
+
+	
 	glFlush();
 }
 
