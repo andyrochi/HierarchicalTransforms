@@ -2,6 +2,7 @@
 // that you can rotate by pressing the arrow keys.
 #include <GL/freeglut.h>
 #include <cstdio>
+#include "Camera.h"
 
 // The robot arm is specified by (1) the angle that the upper arm makes
 // relative to the x-axis, called shoulderAngle, and (2) the angle that the
@@ -11,15 +12,17 @@ static int shoulderAngle = 90, elbowAngle = -90;
 
 static int shoulderOpenAngle = 0, shoulderX2Angle = 0;
 
+// Initialize camera
+Camera camera;
+
 // Handles the keyboard event: the left and right arrows bend the elbow, the
 // up and down keys bend the shoulder.
 void special(int key, int, int) {
 	switch (key) {
-	case GLUT_KEY_LEFT: (elbowAngle += 5) %= 360; break;
-	case GLUT_KEY_RIGHT: (elbowAngle -= 5) %= 360; break;
-	case GLUT_KEY_UP: (shoulderAngle += 5) %= 360; break;
-	case GLUT_KEY_DOWN: (shoulderAngle -= 5) %= 360; break;
-	default: return;
+	case GLUT_KEY_LEFT: camera.moveLeft(); break;
+	case GLUT_KEY_RIGHT: camera.moveRight(); break;
+	case GLUT_KEY_UP: camera.moveUp(); break;
+	case GLUT_KEY_DOWN: camera.moveDown(); break;
 	}
 	glutPostRedisplay();
 }
@@ -39,6 +42,18 @@ void key(unsigned char key, int, int) {
 	case 'D':
 	case 'd':
 		(shoulderX2Angle -= 5) %= 360; break;
+	case 'J':
+	case 'j':
+		(elbowAngle += 5) %= 360; break;
+	case 'L':
+	case 'l':
+		(elbowAngle -= 5) %= 360; break;
+	case 'I':
+	case 'i':
+		(shoulderAngle += 5) %= 360; break;
+	case 'K':
+	case 'k':
+		(shoulderAngle -= 5) %= 360; break;
 	default: return;
 	}
 	glutPostRedisplay();
@@ -65,6 +80,11 @@ void display() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
+
+	glLoadIdentity();
+	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
+		0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0);
 
 	glPushMatrix();
 	glColor3f(1.0, 0.0, 0.0);
@@ -143,6 +163,7 @@ void reshape(GLint w, GLint h) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(65.0, GLfloat(w) / GLfloat(h), 1.0, 20.0);
+	glMatrixMode(GL_MODELVIEW);
 }
 
 // Perfroms application specific initialization: turn off smooth shading,
@@ -152,7 +173,9 @@ void init() {
 	glShadeModel(GL_FLAT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(1, 2, 8, 0, 0, 0, 0, 1, 0);
+	//gluLookAt(1, 2, 8
+	//	, 0, 0, 0
+	//	, 0, 1, 0);
 }
 
 // Initializes GLUT, the display mode, and main window; registers callbacks;
