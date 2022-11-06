@@ -224,7 +224,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(80, 80);
 	glutInitWindowSize(800, 600);
-	glutCreateWindow("Robot");
+	glutCreateWindow("Hierarchical Transforms: Running Robot");
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
