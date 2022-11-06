@@ -21,9 +21,9 @@ Press `<Ctrl> + <F5>` to build without debugging.
 ## Description
 
 ### Camera
-Use the arrow keys `<UP> <DOWN> <LEFT> <RIGHT>` to rotate and move the camera around the robot.
+Use the arrow keys `<UP> <DOWN> <LEFT> <RIGHT>` to rotate and move the camera.
 
-
+### Manipulating each component
 To manipulate the components of the robot, the general concept is that the left half of the robot is controlled by the left half of the keyboard, where the right half is controlled by the right half of the keyboard.
 The left half of the keyboard includes the keys:
 ```
@@ -50,3 +50,5 @@ Press `<F6>` to toggle **Running Mode**, which makes the robot sprint.
 Press `<F7>` to show or hide the moving ground during running mode.
 
 ![gif](https://media.giphy.com/media/MUkQ0SjpPv2DP2UR1o/giphy.gif)
+
+You can also modify each component while the robot is running.
