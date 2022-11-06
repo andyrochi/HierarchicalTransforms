@@ -14,6 +14,7 @@ Robot robot;
 bool run = false;
 int refreshMillis = 50;
 float delta = 0.0;
+bool showGround = true;
 
 void drawGround() {
 	glPushMatrix();
@@ -66,6 +67,9 @@ void special(int key, int, int) {
 			run = false;
 			robot.setRunStatus(run);
 		}
+		break;
+	case GLUT_KEY_F7:
+		showGround = !showGround;
 		break;
 	}
 	glutPostRedisplay();
@@ -190,7 +194,7 @@ void display() {
 		0.0, 1.0, 0.0);
 
 	robot.drawRobot();
-	if (run) drawGround();
+	if (run && showGround) drawGround();
 	
 	if(showAxis) drawAxis();
 	glutSwapBuffers();
@@ -203,7 +207,7 @@ void reshape(GLint w, GLint h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0, GLfloat(w) / GLfloat(h), 1.0, 20.0);
+	gluPerspective(60.0, GLfloat(w) / GLfloat(h), 1.0, 30.0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
