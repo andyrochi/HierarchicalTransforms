@@ -207,6 +207,17 @@ void drawRightLeg() {
 	glPopMatrix();
 }
 
+void drawHead() {
+	glPushMatrix();
+
+	glColor3f(1.0, 1.0, 1.0);
+
+	glTranslatef(0.0, 0.6, 0); // shift entire arm in -z direction
+	wireBox(1.0, 1.2, 1.0);
+
+	glPopMatrix();
+}
+
 // Displays the arm in its current position and orientation.  The whole
 // function is bracketed by glPushMatrix and glPopMatrix calls because every
 // time we call it we are in an "environment" in which a gluLookAt is in
@@ -229,6 +240,8 @@ void display() {
 
 	drawLeftLeg();
 	drawRightLeg();
+
+	drawHead();
 
 	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
 	printf("elbowAngle: %d\n", elbowAngle);
