@@ -22,6 +22,8 @@ const GLfloat paleSilver[] = { 0.80, 0.773, 0.725 };
 const GLfloat blackOlive[] = { 0.251, 0.239, 0.224 };
 const GLfloat eerieBlack[] = { 0.145, 0.141, 0.133 };
 
+const bool showAxis = false;
+
 // Initialize camera
 Camera camera;
 
@@ -230,6 +232,30 @@ void drawHead() {
 	glPopMatrix();
 }
 
+void drawAxis() {
+	glPushMatrix();
+	glColor3f(1.0, 0, 0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(10.0, 0.0, 0.0);
+	glEnd();
+
+	glColor3f(0, 1.0, 0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 10.0, 0.0);
+	glEnd();
+
+	glColor3f(0.0, 0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 10.0);
+	glEnd();
+
+
+	glPopMatrix();
+}
+
 // Displays the arm in its current position and orientation.  The whole
 // function is bracketed by glPushMatrix and glPopMatrix calls because every
 // time we call it we are in an "environment" in which a gluLookAt is in
@@ -256,6 +282,7 @@ void display() {
 	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderTwistAngle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderTwistAngle);
 	printf("elbowAngle: %d\n", elbowAngle);
 	printf("leftThighAngle: %d, rightThighAngle: %d\n", leftThighAngle, rightThighAngle);
+	if(showAxis) drawAxis();
 	glutSwapBuffers();
 }
 
