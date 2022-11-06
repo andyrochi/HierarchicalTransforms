@@ -13,9 +13,34 @@ Robot robot;
 
 bool run = false;
 int refreshMillis = 50;
+float delta = 0.0;
+
+void drawGround() {
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);
+	for (int i = -10; i < 11; i++) {
+		glVertex3f(-10.0, -8.0, (GLfloat)i);
+		glVertex3f(10.0, -8.0, (GLfloat)i);
+	}
+	glEnd();
+
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);
+	for (int i = -10; i < 11; i++) {
+		if (i - delta >= -10) {
+			glVertex3f((GLfloat)i - delta, -8.0, -10.0);
+			glVertex3f((GLfloat)i - delta, -8.0, 10.0);
+		}
+	}
+	glEnd();
+	glPopMatrix();
+	delta += 0.1;
+	if (delta > 1) delta = 0;
+}
 
 void refreshDisplayRun(int value) {
-	robot.setRunState();
+	robot.setRunStep();
 	glutPostRedisplay();    // Post a paint request to activate display()
 	if (run)
 		glutTimerFunc(refreshMillis, refreshDisplayRun, 0); // subsequent timer call at milliseconds
@@ -33,11 +58,13 @@ void special(int key, int, int) {
 	case GLUT_KEY_F6:
 		if (!run) {
 			run = true;
+			robot.setRunStatus(run);
 			robot.setRunPosture();
 			refreshDisplayRun(0);
 		}
 		else {
 			run = false;
+			robot.setRunStatus(run);
 		}
 		break;
 	}
@@ -163,6 +190,7 @@ void display() {
 		0.0, 1.0, 0.0);
 
 	robot.drawRobot();
+	if (run) drawGround();
 	
 	if(showAxis) drawAxis();
 	glutSwapBuffers();
@@ -192,7 +220,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(80, 80);
 	glutInitWindowSize(800, 600);
-	glutCreateWindow("Robot Arm");
+	glutCreateWindow("Robot");
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);

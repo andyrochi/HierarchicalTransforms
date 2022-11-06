@@ -29,7 +29,8 @@ public:
 	void drawRobot();
 
 	void setRunPosture();
-	void setRunState();
+	void setRunStep();
+	void setRunStatus(bool running);
 
 private:
 
@@ -47,4 +48,6 @@ private:
 		rightThighAngle, rightCalfAngle;
 
 	bool rightStateForward;
+	bool running;
+
 };

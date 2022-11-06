@@ -270,11 +270,13 @@ void Robot::drawRobot() {
 	drawRightLeg();
 	drawHead();
 
-	printf("===\n");
-	printf("leftShoulderAngle: %d, leftShoulderOpenAngle: %d, leftShoulderTwistAngle: %d, leftElbowAngle: %d\n", leftShoulderAngle, leftShoulderOpenAngle, leftShoulderTwistAngle, leftElbowAngle);
-	printf("leftThighAngle: %d, leftCalfAngle: %d\n", leftThighAngle, leftCalfAngle);
-	printf("rightShoulderAngle: %d, rightShoulderOpenAngle: %d, rightShoulderTwistAngle: %d, rightElbowAngle: %d\n", rightShoulderAngle, rightShoulderOpenAngle, rightShoulderTwistAngle, rightElbowAngle);
-	printf("rightThighAngle: %d, rightCalfAngle: %d\n", rightThighAngle, rightCalfAngle);
+	if (!running) {
+		printf("===\n");
+		printf("leftShoulderAngle: %d, leftShoulderOpenAngle: %d, leftShoulderTwistAngle: %d, leftElbowAngle: %d\n", leftShoulderAngle, leftShoulderOpenAngle, leftShoulderTwistAngle, leftElbowAngle);
+		printf("leftThighAngle: %d, leftCalfAngle: %d\n", leftThighAngle, leftCalfAngle);
+		printf("rightShoulderAngle: %d, rightShoulderOpenAngle: %d, rightShoulderTwistAngle: %d, rightElbowAngle: %d\n", rightShoulderAngle, rightShoulderOpenAngle, rightShoulderTwistAngle, rightElbowAngle);
+		printf("rightThighAngle: %d, rightCalfAngle: %d\n", rightThighAngle, rightCalfAngle);
+	}
 }
 
 void Robot::setRunPosture() {
@@ -293,7 +295,7 @@ void Robot::setRunPosture() {
 	rightCalfAngle = -40;
 }
 
-void Robot::setRunState() {
+void Robot::setRunStep() {
 	if (rightStateForward) {
 		leftShoulderAngle += 5;
 		leftThighAngle = leftShoulderAngle;
@@ -309,5 +311,15 @@ void Robot::setRunState() {
 		rightShoulderAngle += 5;
 		rightThighAngle = rightShoulderAngle;
 		if (rightShoulderAngle >= 45) rightStateForward = !rightStateForward;
+	}
+}
+
+void Robot::setRunStatus(bool running) {
+	this->running = running;
+	if (running) {
+		printf("Robot is now RUNNING!\nFeel free to rotate its limbs\n");
+	}
+	else {
+		printf("Stop running.\n");
 	}
 }
