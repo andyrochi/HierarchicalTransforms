@@ -11,6 +11,16 @@ Camera camera;
 // Initialize robot
 Robot robot;
 
+bool run = false;
+int refreshMillis = 50;
+
+void refreshDisplayRun(int value) {
+	robot.setRunState();
+	glutPostRedisplay();    // Post a paint request to activate display()
+	if (run)
+		glutTimerFunc(refreshMillis, refreshDisplayRun, 0); // subsequent timer call at milliseconds
+}
+
 // Handles the keyboard event: the left and right arrows bend the elbow, the
 // up and down keys bend the shoulder.
 void special(int key, int, int) {
@@ -19,6 +29,17 @@ void special(int key, int, int) {
 	case GLUT_KEY_RIGHT: camera.moveRight(); break;
 	case GLUT_KEY_UP: camera.moveUp(); break;
 	case GLUT_KEY_DOWN: camera.moveDown(); break;
+	case GLUT_KEY_F5: robot.setRunPosture(); break;
+	case GLUT_KEY_F6:
+		if (!run) {
+			run = true;
+			robot.setRunPosture();
+			refreshDisplayRun(0);
+		}
+		else {
+			run = false;
+		}
+		break;
 	}
 	glutPostRedisplay();
 }
@@ -52,11 +73,13 @@ void key(unsigned char key, int, int) {
 		break;
 	case 'Q':
 	case 'q':
-		robot.incShoulderAngle(LEFT);
+		if(!run)
+			robot.incShoulderAngle(LEFT);
 		break;
 	case 'Z':
 	case 'z':
-		robot.decShoulderAngle(LEFT);
+		if(!run)
+			robot.decShoulderAngle(LEFT);
 		break;
 
 	case 'I':
@@ -85,11 +108,13 @@ void key(unsigned char key, int, int) {
 		break;
 	case 'O':
 	case 'o':
-		robot.incShoulderAngle(RIGHT);
+		if (!run)
+			robot.incShoulderAngle(RIGHT);
 		break;
 	case '>':
 	case '.':
-		robot.decShoulderAngle(RIGHT);
+		if (!run)
+			robot.decShoulderAngle(RIGHT);
 		break;
 
 	case '1':
