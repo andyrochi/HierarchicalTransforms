@@ -8,9 +8,9 @@
 // relative to the x-axis, called shoulderAngle, and (2) the angle that the
 // lower arm makes relative to the upper arm, called elbowAngle.  These angles
 // are adjusted in 5 degree increments by a keyboard callback.
-static int shoulderAngle = 90, elbowAngle = -90;
+static int shoulderAngle = 0, elbowAngle = 0;
 
-static int shoulderOpenAngle = 0, shoulderX2Angle = 0;
+static int shoulderOpenAngle = 0, shoulderTwistAngle = 0;
 
 static int leftThighAngle = 0, leftCalfAngle = 0,
 			rightThighAngle = 0, rightCalfAngle = 0;
@@ -41,10 +41,10 @@ void key(unsigned char key, int, int) {
 		(shoulderOpenAngle -= 5) %= 360; break;
 	case 'A':
 	case 'a':
-		(shoulderX2Angle += 5) %= 360; break;
+		(shoulderTwistAngle += 5) %= 360; break;
 	case 'D':
 	case 'd':
-		(shoulderX2Angle -= 5) %= 360; break;
+		(shoulderTwistAngle -= 5) %= 360; break;
 	case 'J':
 	case 'j':
 		(elbowAngle += 5) %= 360; break;
@@ -99,30 +99,28 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
 	// the thing about glutWireBox is that normally its origin is in the middle
 	// of the box, but we want the "origin" of our box to be at the left end of
-	// the box, so it needs to first be shifted 1 unit in the x direction, then
+	// the box, so it needs to first be shifted 1 unit in the -z direction, then
 	// rotated.
 	glTranslatef(0.0, 0.0, -centerDist); // shift entire arm in -z direction
-	glRotatef((GLfloat)shoulderOpenAngle, 1.0, 0.0, 0.0);
-	glRotatef((GLfloat)shoulderAngle, 0.0, 1.0, 0.0);
-	glRotatef((GLfloat)shoulderX2Angle, 1.0, 0.0, 0.0);
-	glTranslatef(1.0, 0.0, 0.0);
+	glRotatef((GLfloat)shoulderOpenAngle, 1.0, 0.0, 0.0); // open arm w.r.t. x-axis
+	glRotatef((GLfloat)shoulderAngle, 0.0, 1.0, 0.0); 
+	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0); // twist arm
+	glTranslatef(0.0, 0.0, -1.0); // shift towards -z direction
 
-	wireBox(2.0, 0.4, 1.0);
+	wireBox(1.0, 0.4, 2.0);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
 	// to the upper arm we put the code here so that all rotations we do are
 	// relative to the rotation that we already made above to orient the upper
-	// arm.  So, we want to rotate elbow degrees about the z-axis.  But, like
+	// arm.  So, we want to rotate elbow degrees about the y-axis.  But, like
 	// before, the anchor point for the rotation is at the end of the box, so
-	// we translate <1,0,0> before rotating.  But after rotating we have to
+	// we translate <0,0,-1> before rotating.  But after rotating we have to
 	// position the lower arm at the end of the upper arm, so we have to
-	// translate it <1,0,0> again.
-	glTranslatef(1.0, 0.0, 0.0);
+	// translate it <0,0,-1> again.
+	glTranslatef(0.0, 0.0, -1.0);
 	glRotatef((GLfloat)elbowAngle, 0.0, 1.0, 0.0);
-	glTranslatef(1.0, 0.0, 0.0);
-	wireBox(2.0, 0.4, 1.0);
-
-	//glTranslatef(3.0, 0.0, 0.0);
+	glTranslatef(0.0, 0.0, -1.0); // displace
+	wireBox(1.0, 0.4, 2.0);
 
 	glPopMatrix();
 }
@@ -131,31 +129,31 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
 
-	// Draw the upper arm, rotated shoulder degrees about the z-axis.  Note that
+	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
 	// the thing about glutWireBox is that normally its origin is in the middle
-	// of the box, but we want the "origin" of our box to be at the left end of
-	// the box, so it needs to first be shifted 1 unit in the x direction, then
+	// of the box, but we want the "origin" of our box to be at the right end of
+	// the box, so it needs to first be shifted 1 unit in the z direction, then
 	// rotated.
 	glTranslatef(0.0, 0.0, centerDist); // shift entire arm in z direction
 	glRotatef((GLfloat)-shoulderOpenAngle, 1.0, 0.0, 0.0);
 	glRotatef((GLfloat)-shoulderAngle, 0.0, 1.0, 0.0);
-	glRotatef((GLfloat)-shoulderX2Angle, 1.0, 0.0, 0.0);
-	glTranslatef(1.0, 0.0, 0.0);
+	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0);
+	glTranslatef(0.0, 0.0, 1.0);
 
-	wireBox(2.0, 0.4, 1.0);
+	wireBox(1.0, 0.4, 2.0);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
 	// to the upper arm we put the code here so that all rotations we do are
 	// relative to the rotation that we already made above to orient the upper
-	// arm.  So, we want to rotate elbow degrees about the z-axis.  But, like
+	// arm.  So, we want to rotate elbow degrees about the y-axis.  But, like
 	// before, the anchor point for the rotation is at the end of the box, so
-	// we translate <1,0,0> before rotating.  But after rotating we have to
+	// we translate <0,0,1> before rotating.  But after rotating we have to
 	// position the lower arm at the end of the upper arm, so we have to
-	// translate it <1,0,0> again.
-	glTranslatef(1.0, 0.0, 0.0);
+	// translate it <0,0,1> again.
+	glTranslatef(0.0, 0.0, 1.0);
 	glRotatef((GLfloat)-elbowAngle, 0.0, 1.0, 0.0);
-	glTranslatef(1.0, 0.0, 0.0);
-	wireBox(2.0, 0.4, 1.0);
+	glTranslatef(0.0, 0.0, 1.0);
+	wireBox(1.0, 0.4, 2.0);
 
 	glPopMatrix();
 }
@@ -243,7 +241,7 @@ void display() {
 
 	drawHead();
 
-	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
+	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderTwistAngle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderTwistAngle);
 	printf("elbowAngle: %d\n", elbowAngle);
 	printf("leftThighAngle: %d, rightThighAngle: %d\n", leftThighAngle, rightThighAngle);
 	glFlush();
