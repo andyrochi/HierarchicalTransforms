@@ -19,8 +19,28 @@ As long as OpenGL is configured on your PC (which is usually installed along wit
 Press `<Ctrl> + <F5>` to build without debugging.
 
 ## Description
+
+### Camera
 Use the arrow keys `<UP> <DOWN> <LEFT> <RIGHT>` to rotate and move the camera around the robot.
 
+
+To manipulate the components of the robot, the general concept is that the left half of the robot is controlled by the left half of the keyboard, where the right half is controlled by the right half of the keyboard.
+The left half of the keyboard includes the keys:
+```
+<W> <S> <A> <D>
+<Q> <Z> <E> <C>
+<1> <2> <3> <4>
+```
+Where the right half of the body is controlled by the right half of the keyboard:
+```
+<I> <K> <J> <L>
+<O> <.> <U> <M>
+<5> <6> <7> <8>
+```
+The mapping of each key to each component is shown in the three figures below:
+![front](docs/front.png)
+![left-side](docs/left-side.png)
+![right-side](docs/right-side.png)
 
 ### Running Robot
 Press `<F5>` to set the robot to a running posture.
