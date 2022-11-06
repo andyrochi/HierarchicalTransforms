@@ -1,34 +1,15 @@
 // This program is from the OpenGL Programming Guide.  It shows a robot arm
 // that you can rotate by pressing the arrow keys.
-#include <GL/freeglut.h>
-#include <cstdio>
 #include "Camera.h"
-
-// The robot arm is specified by (1) the angle that the upper arm makes
-// relative to the x-axis, called shoulderAngle, and (2) the angle that the
-// lower arm makes relative to the upper arm, called elbowAngle.  These angles
-// are adjusted in 5 degree increments by a keyboard callback.
-static int shoulderAngle = 0, elbowAngle = 0;
-
-static int shoulderOpenAngle = 0, shoulderTwistAngle = 0;
-
-static int leftShoulderAngle = 0, leftShoulderOpenAngle = 0, leftShoulderTwistAngle = 0, leftElbowAngle = 0;
-static int rightShoulderAngle = 0, rightShoulderOpenAngle = 0, rightShoulderTwistAngle = 0, rightElbowAngle = 0;
-
-static int leftThighAngle = 0, leftCalfAngle = 0,
-			rightThighAngle = 0, rightCalfAngle = 0;
-
-static GLfloat centerX = 0.0, centerY = -2.0, centerZ = 0.0;
-
-const GLfloat floralWhite[] = { 1.0, 0.988, 0.949 };
-const GLfloat paleSilver[] = { 0.80, 0.773, 0.725 };
-const GLfloat blackOlive[] = { 0.251, 0.239, 0.224 };
-const GLfloat eerieBlack[] = { 0.145, 0.141, 0.133 };
+#include "Robot.h"
 
 const bool showAxis = false;
 
 // Initialize camera
 Camera camera;
+
+// Initialize robot
+Robot robot;
 
 // Handles the keyboard event: the left and right arrows bend the elbow, the
 // up and down keys bend the shoulder.
@@ -47,244 +28,101 @@ void key(unsigned char key, int, int) {
 	switch (key) {
 	case 'W':
 	case 'w':
-		(leftShoulderOpenAngle += 5) %= 360; break;
+		robot.incShoulderOpenAngle(LEFT);
+		break;
 	case 'S':
 	case 's':
-		(leftShoulderOpenAngle -= 5) %= 360; break;
+		robot.decShoulderOpenAngle(LEFT);
+		break;
 	case 'A':
 	case 'a':
-		(leftShoulderTwistAngle += 5) %= 360; break;
+		robot.incShoulderTwistAngle(LEFT);
+		break;
 	case 'D':
 	case 'd':
-		(leftShoulderTwistAngle -= 5) %= 360; break;
+		robot.decShoulderTwistAngle(LEFT);
+		break;
 	case 'E':
 	case 'e':
-		(leftElbowAngle += 5) %= 360; break;
+		robot.incElbowAngle(LEFT);
+		break;
 	case 'C':
 	case 'c':
-		(leftElbowAngle -= 5) %= 360; break;
+		robot.decElbowAngle(LEFT);
+		break;
 	case 'Q':
 	case 'q':
-		(leftShoulderAngle += 5) %= 360; break;
+		robot.incShoulderAngle(LEFT);
+		break;
 	case 'Z':
 	case 'z':
-		(leftShoulderAngle -= 5) %= 360; break;
+		robot.decShoulderAngle(LEFT);
+		break;
 
 	case 'I':
 	case 'i':
-		(rightShoulderOpenAngle += 5) %= 360; break;
+		robot.incShoulderOpenAngle(RIGHT);
+		break;
 	case 'K':
 	case 'k':
-		(rightShoulderOpenAngle -= 5) %= 360; break;
+		robot.decShoulderOpenAngle(RIGHT);
+		break;
 	case 'J':
 	case 'j':
-		(rightShoulderTwistAngle -= 5) %= 360; break;
+		robot.decShoulderTwistAngle(RIGHT);
+		break;
 	case 'L':
 	case 'l':
-		(rightShoulderTwistAngle += 5) %= 360; break;
+		robot.incShoulderTwistAngle(RIGHT);
+		break;
 	case 'U':
 	case 'u':
-		(rightElbowAngle += 5) %= 360; break;
+		robot.incElbowAngle(RIGHT);
+		break;
 	case 'M':
 	case 'm':
-		(rightElbowAngle -= 5) %= 360; break;
+		robot.decElbowAngle(RIGHT);
+		break;
 	case 'O':
 	case 'o':
-		(rightShoulderAngle += 5) %= 360; break;
+		robot.incShoulderAngle(RIGHT);
+		break;
 	case '>':
 	case '.':
-		(rightShoulderAngle -= 5) %= 360; break;
+		robot.decShoulderAngle(RIGHT);
+		break;
 
 	case '1':
-		(leftThighAngle -= 5) %= 360; break;
+		robot.decThighAngle(LEFT);
+		break;
 	case '2':
-		(leftThighAngle += 5) %= 360; break;
+		robot.incThighAngle(LEFT);
+		break;
 	case '3':
-		(leftCalfAngle -= 5) %= 360; break;
+		robot.decCalfAngle(LEFT);
+		break;
 	case '4':
-		(leftCalfAngle += 5) %= 360; break;
+		robot.incCalfAngle(LEFT);
+		break;
 
 	case '5':
-		(rightThighAngle -= 5) %= 360; break;
+		robot.decThighAngle(RIGHT);
+		break;
 	case '6':
-		(rightThighAngle += 5) %= 360; break;
+		robot.incThighAngle(RIGHT);
+		break;
 	case '7':
-		(rightCalfAngle -= 5) %= 360; break;
+		robot.decCalfAngle(RIGHT);
+		break;
 	case '8':
-		(rightCalfAngle += 5) %= 360; break;
+		robot.incCalfAngle(RIGHT);
+		break;
 	default: return;
 	}
 	glutPostRedisplay();
 }
 
-// wireBox(w, h, d) makes a wireframe box with width w, height h and
-// depth d centered at the origin.  It uses the GLUT wire cube function.
-// The calls to glPushMatrix and glPopMatrix are essential here; they enable
-// this function to be called from just about anywhere and guarantee that
-// the glScalef call does not pollute code that follows a call to myWireBox.
-void wireBox(GLdouble width, GLdouble height, GLdouble depth) {
-	glPushMatrix();
-	glScalef(width, height, depth);
-	glutSolidCube(1.0);
-	glPopMatrix();
-}
-
-void drawLeftArm(GLfloat centerDist=1.0) {
-	glPushMatrix();
-
-	glColor3fv(paleSilver);
-	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
-	// the thing about glutWireBox is that normally its origin is in the middle
-	// of the box, but we want the "origin" of our box to be at the left end of
-	// the box, so it needs to first be shifted 1 unit in the -z direction, then
-	// rotated.
-	glTranslatef(0.0, 0.0, -centerDist); // shift entire arm in -z direction
-	glRotatef((GLfloat)leftShoulderOpenAngle, 1.0, 0.0, 0.0); // open arm w.r.t. x-axis
-	glRotatef((GLfloat)leftShoulderAngle, 0.0, 1.0, 0.0);
-	glRotatef((GLfloat)leftShoulderTwistAngle, 0.0, 0.0, 1.0); // twist arm
-	glTranslatef(0.0, 0.0, -1.0); // shift towards -z direction
-
-	//wireBox(1.0, 0.4, 2.0);
-	wireBox(1.2, 0.7, 2.2);
-
-	// Now we are ready to draw the lower arm.  Since the lower arm is attached
-	// to the upper arm we put the code here so that all rotations we do are
-	// relative to the rotation that we already made above to orient the upper
-	// arm.  So, we want to rotate elbow degrees about the y-axis.  But, like
-	// before, the anchor point for the rotation is at the end of the box, so
-	// we translate <0,0,-1> before rotating.  But after rotating we have to
-	// position the lower arm at the end of the upper arm, so we have to
-	// translate it <0,0,-1> again.
-	glColor3fv(floralWhite);
-	glTranslatef(0.0, 0.0, -1.0);
-	glRotatef((GLfloat)-leftElbowAngle, 0.0, 1.0, 0.0);
-	glTranslatef(0.0, 0.0, -1.0); // displace
-	wireBox(0.6, 0.4, 2.0);
-
-	glPopMatrix();
-}
-
-void drawRightArm(GLfloat centerDist=1.0) {
-	glPushMatrix();
-
-	glColor3fv(paleSilver);
-
-	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
-	// the thing about glutWireBox is that normally its origin is in the middle
-	// of the box, but we want the "origin" of our box to be at the right end of
-	// the box, so it needs to first be shifted 1 unit in the z direction, then
-	// rotated.
-	glTranslatef(0.0, 0.0, centerDist); // shift entire arm in z direction
-	glRotatef((GLfloat)-rightShoulderOpenAngle, 1.0, 0.0, 0.0);
-	glRotatef((GLfloat)-rightShoulderAngle, 0.0, 1.0, 0.0);
-	glRotatef((GLfloat)rightShoulderTwistAngle, 0.0, 0.0, 1.0);
-	glTranslatef(0.0, 0.0, 1.0);
-
-	//wireBox(1.0, 0.4, 2.0);
-	wireBox(1.2, 0.7, 2.2);
-
-	// Now we are ready to draw the lower arm.  Since the lower arm is attached
-	// to the upper arm we put the code here so that all rotations we do are
-	// relative to the rotation that we already made above to orient the upper
-	// arm.  So, we want to rotate elbow degrees about the y-axis.  But, like
-	// before, the anchor point for the rotation is at the end of the box, so
-	// we translate <0,0,1> before rotating.  But after rotating we have to
-	// position the lower arm at the end of the upper arm, so we have to
-	// translate it <0,0,1> again.
-	glColor3fv(floralWhite);
-	glTranslatef(0.0, 0.0, 1.0);
-	glRotatef((GLfloat)rightElbowAngle, 0.0, 1.0, 0.0);
-	glTranslatef(0.0, 0.0, 1.0);
-	wireBox(0.6, 0.4, 2.0);
-
-	glPopMatrix();
-}
-
-void drawTorso() {
-	glPushMatrix();
-	glColor3fv(blackOlive);
-	glTranslatef(0.0, -2.0, 0);
-	glRotatef(90.0, 0, 1, 0);
-	wireBox(3.0, 4., 1.0);
-	glPopMatrix();
-}
-
-void drawLeftLeg() {
-	glPushMatrix();
-
-	glColor3fv(eerieBlack);
-	
-	glTranslatef(0.0, -4.0, -0.75); // shift entire arm in -z direction
-	glRotatef((GLfloat)leftThighAngle, 0.0, 0.0, 1.0);
-	glTranslatef(0.0, -1.0, 0.0);
-
-	wireBox(1.0, 2.0, 1.0);
-
-	glColor3fv(floralWhite);
-	glTranslatef(0.0, -1.0, 0.0);
-	glRotatef((GLfloat)leftCalfAngle, 0.0, 0.0, 1.0);
-	glTranslatef(0.0, -1.0, 0.0);
-	wireBox(0.5, 2.0, 0.5);
-
-	glPopMatrix();
-}
-
-void drawRightLeg() {
-	glPushMatrix();
-
-	glColor3fv(eerieBlack);
-
-	glTranslatef(0.0, -4.0, 0.75); // shift entire arm in -z direction
-	glRotatef((GLfloat)rightThighAngle, 0.0, 0.0, 1.0);
-	glTranslatef(0.0, -1.0, 0.0);
-
-	wireBox(1.0, 2.0, 1.0);
-
-	glColor3fv(floralWhite);
-	glTranslatef(0.0, -1.0, 0.0);
-	glRotatef((GLfloat)rightCalfAngle, 0.0, 0.0, 1.0);
-	glTranslatef(0.0, -1.0, 0.0);
-	wireBox(0.5, 2.0, 0.5);
-
-	glPopMatrix();
-}
-
-void drawHead() {
-	glPushMatrix();
-
-	glColor3f(1.0, 1.0, 1.0);
-
-	glTranslatef(0.0, 0.6, 0); // shift head to correct position
-	wireBox(1.0, 1.2, 1.0);
-
-	glPopMatrix();
-}
-
-void drawAxis() {
-	glPushMatrix();
-	glColor3f(1.0, 0, 0);
-	glBegin(GL_LINES);
-		glVertex3f(0.0, 0.0, 0.0);
-		glVertex3f(10.0, 0.0, 0.0);
-	glEnd();
-
-	glColor3f(0, 1.0, 0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 10.0, 0.0);
-	glEnd();
-
-	glColor3f(0.0, 0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 0.0, 10.0);
-	glEnd();
-
-
-	glPopMatrix();
-}
-
-// Displays the arm in its current position and orientation.  The whole
+// Displays the robot in its current position and orientation.  The whole
 // function is bracketed by glPushMatrix and glPopMatrix calls because every
 // time we call it we are in an "environment" in which a gluLookAt is in
 // effect.  (Note that in particular, replacing glPushMatrix with
@@ -299,18 +137,8 @@ void display() {
 		centerX, centerY, centerZ,
 		0.0, 1.0, 0.0);
 
-	drawTorso();
-	drawLeftArm(1.5+0.1);
-	drawRightArm(1.5+0.1);
-	drawLeftLeg();
-	drawRightLeg();
-
-	drawHead();
-	printf("===\n");
-	printf("leftShoulderAngle: %d, leftShoulderOpenAngle: %d, leftShoulderTwistAngle: %d, leftElbowAngle: %d\n", leftShoulderAngle, leftShoulderOpenAngle, leftShoulderTwistAngle, leftElbowAngle);
-	printf("leftThighAngle: %d, leftCalfAngle: %d\n", leftThighAngle, leftCalfAngle);
-	printf("rightShoulderAngle: %d, rightShoulderOpenAngle: %d, rightShoulderTwistAngle: %d, rightElbowAngle: %d\n", rightShoulderAngle, rightShoulderOpenAngle, rightShoulderTwistAngle, rightElbowAngle);
-	printf("rightThighAngle: %d, rightCalfAngle: %d\n", rightThighAngle, rightCalfAngle);
+	robot.drawRobot();
+	
 	if(showAxis) drawAxis();
 	glutSwapBuffers();
 }
@@ -326,16 +154,10 @@ void reshape(GLint w, GLint h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-// Perfroms application specific initialization: turn off smooth shading,
-// sets the viewing transformation once and for all.  In this application we
-// won't be moving the camera at all, so it makes sense to do this.
 void init() {
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	//gluLookAt(1, 2, 8
-	//	, 0, 0, 0
-	//	, 0, 1, 0);
 }
 
 // Initializes GLUT, the display mode, and main window; registers callbacks;
