@@ -12,6 +12,8 @@ static int shoulderAngle = 90, elbowAngle = -90;
 
 static int shoulderOpenAngle = 0, shoulderX2Angle = 0;
 
+static int thighAngle = 0, calfAngle = 0;
+
 // Initialize camera
 Camera camera;
 
@@ -54,6 +56,15 @@ void key(unsigned char key, int, int) {
 	case 'K':
 	case 'k':
 		(shoulderAngle -= 5) %= 360; break;
+
+	case '1':
+		(thighAngle -= 5) %= 360; break;
+	case '2':
+		(thighAngle += 5) %= 360; break;
+	case '3':
+		(calfAngle -= 5) %= 360; break;
+	case '4':
+		(calfAngle += 5) %= 360; break;
 	default: return;
 	}
 	glutPostRedisplay();
@@ -101,7 +112,7 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	glTranslatef(1.0, 0.0, 0.0);
 	wireBox(2.0, 0.4, 1.0);
 
-	glTranslatef(3.0, 0.0, 0.0);
+	//glTranslatef(3.0, 0.0, 0.0);
 
 	glPopMatrix();
 }
@@ -144,7 +155,34 @@ void drawTorso() {
 	glColor3f(0.0, 0.0, 1.0);
 	glTranslatef(0.0, -2.0, 0);
 	glRotatef(90.0, 0, 1, 0);
-	wireBox(3.0, 5., 1.0);
+	wireBox(3.0, 4., 1.0);
+	glPopMatrix();
+}
+
+void drawLeftLeg() {
+	glPushMatrix();
+
+	glColor3f(1.0, 0.0, 0.0);
+	
+	glTranslatef(0.0, -4.0, -0.75); // shift entire arm in -z direction
+	glRotatef((GLfloat)thighAngle, 0.0, 0.0, 1.0);
+	glTranslatef(0.0, -1.0, 0.0);
+
+	wireBox(1.0, 2.0, 1.0);
+
+	// Now we are ready to draw the lower arm.  Since the lower arm is attached
+	// to the upper arm we put the code here so that all rotations we do are
+	// relative to the rotation that we already made above to orient the upper
+	// arm.  So, we want to rotate elbow degrees about the z-axis.  But, like
+	// before, the anchor point for the rotation is at the end of the box, so
+	// we translate <1,0,0> before rotating.  But after rotating we have to
+	// position the lower arm at the end of the upper arm, so we have to
+	// translate it <1,0,0> again.
+	glTranslatef(0.0, -1.0, 0.0);
+	glRotatef((GLfloat)calfAngle, 0.0, 0.0, 1.0);
+	glTranslatef(0.0, -1.0, 0.0);
+	wireBox(0.5, 2.0, 0.5);
+
 	glPopMatrix();
 }
 
@@ -167,6 +205,8 @@ void display() {
 	drawLeftArm(1.5);
 	drawRightArm(1.5);
 	drawTorso();
+
+	drawLeftLeg();
 
 	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
 
