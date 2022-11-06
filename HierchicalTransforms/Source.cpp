@@ -15,6 +15,8 @@ static int shoulderOpenAngle = 0, shoulderTwistAngle = 0;
 static int leftThighAngle = 0, leftCalfAngle = 0,
 			rightThighAngle = 0, rightCalfAngle = 0;
 
+static GLfloat centerX = 0.0, centerY = -2.0, centerZ = 0.0;
+
 // Initialize camera
 Camera camera;
 
@@ -210,7 +212,7 @@ void drawHead() {
 
 	glColor3f(1.0, 1.0, 1.0);
 
-	glTranslatef(0.0, 0.6, 0); // shift entire arm in -z direction
+	glTranslatef(0.0, 0.6, 0); // shift head to correct position
 	wireBox(1.0, 1.2, 1.0);
 
 	glPopMatrix();
@@ -228,7 +230,7 @@ void display() {
 
 	glLoadIdentity();
 	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
-		0.0, 0.0, 0.0,
+		centerX, centerY, centerZ,
 		0.0, 1.0, 0.0);
 
 
@@ -254,7 +256,7 @@ void reshape(GLint w, GLint h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(65.0, GLfloat(w) / GLfloat(h), 1.0, 20.0);
+	gluPerspective(60.0, GLfloat(w) / GLfloat(h), 1.0, 20.0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
