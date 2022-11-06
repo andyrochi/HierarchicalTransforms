@@ -12,6 +12,9 @@ static int shoulderAngle = 0, elbowAngle = 0;
 
 static int shoulderOpenAngle = 0, shoulderTwistAngle = 0;
 
+static int leftShoulderAngle = 0, leftShoulderOpenAngle = 0, leftShoulderTwistAngle = 0, leftElbowAngle = 0;
+static int rightShoulderAngle = 0, rightShoulderOpenAngle = 0, rightShoulderTwistAngle = 0, rightElbowAngle = 0;
+
 static int leftThighAngle = 0, leftCalfAngle = 0,
 			rightThighAngle = 0, rightCalfAngle = 0;
 
@@ -44,28 +47,53 @@ void key(unsigned char key, int, int) {
 	switch (key) {
 	case 'W':
 	case 'w':
-		(shoulderOpenAngle += 5) %= 360; break;
+		(leftShoulderOpenAngle += 5) %= 360; break;
 	case 'S':
 	case 's':
-		(shoulderOpenAngle -= 5) %= 360; break;
+		(leftShoulderOpenAngle -= 5) %= 360; break;
 	case 'A':
 	case 'a':
-		(shoulderTwistAngle += 5) %= 360; break;
+		(leftShoulderTwistAngle += 5) %= 360; break;
 	case 'D':
 	case 'd':
-		(shoulderTwistAngle -= 5) %= 360; break;
-	case 'J':
-	case 'j':
-		(elbowAngle += 5) %= 360; break;
-	case 'L':
-	case 'l':
-		(elbowAngle -= 5) %= 360; break;
+		(leftShoulderTwistAngle -= 5) %= 360; break;
+	case 'E':
+	case 'e':
+		(leftElbowAngle += 5) %= 360; break;
+	case 'C':
+	case 'c':
+		(leftElbowAngle -= 5) %= 360; break;
+	case 'Q':
+	case 'q':
+		(leftShoulderAngle += 5) %= 360; break;
+	case 'Z':
+	case 'z':
+		(leftShoulderAngle -= 5) %= 360; break;
+
 	case 'I':
 	case 'i':
-		(shoulderAngle += 5) %= 360; break;
+		(rightShoulderOpenAngle += 5) %= 360; break;
 	case 'K':
 	case 'k':
-		(shoulderAngle -= 5) %= 360; break;
+		(rightShoulderOpenAngle -= 5) %= 360; break;
+	case 'J':
+	case 'j':
+		(rightShoulderTwistAngle -= 5) %= 360; break;
+	case 'L':
+	case 'l':
+		(rightShoulderTwistAngle += 5) %= 360; break;
+	case 'U':
+	case 'u':
+		(rightElbowAngle += 5) %= 360; break;
+	case 'M':
+	case 'm':
+		(rightElbowAngle -= 5) %= 360; break;
+	case 'O':
+	case 'o':
+		(rightShoulderAngle += 5) %= 360; break;
+	case '>':
+	case '.':
+		(rightShoulderAngle -= 5) %= 360; break;
 
 	case '1':
 		(leftThighAngle -= 5) %= 360; break;
@@ -111,9 +139,9 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	// the box, so it needs to first be shifted 1 unit in the -z direction, then
 	// rotated.
 	glTranslatef(0.0, 0.0, -centerDist); // shift entire arm in -z direction
-	glRotatef((GLfloat)shoulderOpenAngle, 1.0, 0.0, 0.0); // open arm w.r.t. x-axis
-	glRotatef((GLfloat)shoulderAngle, 0.0, 1.0, 0.0); 
-	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0); // twist arm
+	glRotatef((GLfloat)leftShoulderOpenAngle, 1.0, 0.0, 0.0); // open arm w.r.t. x-axis
+	glRotatef((GLfloat)leftShoulderAngle, 0.0, 1.0, 0.0);
+	glRotatef((GLfloat)leftShoulderTwistAngle, 0.0, 0.0, 1.0); // twist arm
 	glTranslatef(0.0, 0.0, -1.0); // shift towards -z direction
 
 	//wireBox(1.0, 0.4, 2.0);
@@ -129,7 +157,7 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	// translate it <0,0,-1> again.
 	glColor3fv(floralWhite);
 	glTranslatef(0.0, 0.0, -1.0);
-	glRotatef((GLfloat)elbowAngle, 0.0, 1.0, 0.0);
+	glRotatef((GLfloat)-leftElbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, -1.0); // displace
 	wireBox(0.6, 0.4, 2.0);
 
@@ -147,9 +175,9 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	// the box, so it needs to first be shifted 1 unit in the z direction, then
 	// rotated.
 	glTranslatef(0.0, 0.0, centerDist); // shift entire arm in z direction
-	glRotatef((GLfloat)-shoulderOpenAngle, 1.0, 0.0, 0.0);
-	glRotatef((GLfloat)-shoulderAngle, 0.0, 1.0, 0.0);
-	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0);
+	glRotatef((GLfloat)-rightShoulderOpenAngle, 1.0, 0.0, 0.0);
+	glRotatef((GLfloat)-rightShoulderAngle, 0.0, 1.0, 0.0);
+	glRotatef((GLfloat)rightShoulderTwistAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, 0.0, 1.0);
 
 	//wireBox(1.0, 0.4, 2.0);
@@ -165,7 +193,7 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	// translate it <0,0,1> again.
 	glColor3fv(floralWhite);
 	glTranslatef(0.0, 0.0, 1.0);
-	glRotatef((GLfloat)-elbowAngle, 0.0, 1.0, 0.0);
+	glRotatef((GLfloat)rightElbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, 1.0);
 	wireBox(0.6, 0.4, 2.0);
 
@@ -278,10 +306,11 @@ void display() {
 	drawRightLeg();
 
 	drawHead();
-
-	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderTwistAngle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderTwistAngle);
-	printf("elbowAngle: %d\n", elbowAngle);
-	printf("leftThighAngle: %d, rightThighAngle: %d\n", leftThighAngle, rightThighAngle);
+	printf("===\n");
+	printf("leftShoulderAngle: %d, leftShoulderOpenAngle: %d, leftShoulderTwistAngle: %d, leftElbowAngle: %d\n", leftShoulderAngle, leftShoulderOpenAngle, leftShoulderTwistAngle, leftElbowAngle);
+	printf("leftThighAngle: %d, leftCalfAngle: %d\n", leftThighAngle, leftCalfAngle);
+	printf("rightShoulderAngle: %d, rightShoulderOpenAngle: %d, rightShoulderTwistAngle: %d, rightElbowAngle: %d\n", rightShoulderAngle, rightShoulderOpenAngle, rightShoulderTwistAngle, rightElbowAngle);
+	printf("rightThighAngle: %d, rightCalfAngle: %d\n", rightThighAngle, rightCalfAngle);
 	if(showAxis) drawAxis();
 	glutSwapBuffers();
 }
