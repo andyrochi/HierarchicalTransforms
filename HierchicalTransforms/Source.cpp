@@ -12,7 +12,8 @@ static int shoulderAngle = 90, elbowAngle = -90;
 
 static int shoulderOpenAngle = 0, shoulderX2Angle = 0;
 
-static int thighAngle = 0, calfAngle = 0;
+static int leftThighAngle = 0, leftCalfAngle = 0,
+			rightThighAngle = 0, rightCalfAngle = 0;
 
 // Initialize camera
 Camera camera;
@@ -58,13 +59,22 @@ void key(unsigned char key, int, int) {
 		(shoulderAngle -= 5) %= 360; break;
 
 	case '1':
-		(thighAngle -= 5) %= 360; break;
+		(leftThighAngle -= 5) %= 360; break;
 	case '2':
-		(thighAngle += 5) %= 360; break;
+		(leftThighAngle += 5) %= 360; break;
 	case '3':
-		(calfAngle -= 5) %= 360; break;
+		(leftCalfAngle -= 5) %= 360; break;
 	case '4':
-		(calfAngle += 5) %= 360; break;
+		(leftCalfAngle += 5) %= 360; break;
+
+	case '5':
+		(rightThighAngle -= 5) %= 360; break;
+	case '6':
+		(rightThighAngle += 5) %= 360; break;
+	case '7':
+		(rightCalfAngle -= 5) %= 360; break;
+	case '8':
+		(rightCalfAngle += 5) %= 360; break;
 	default: return;
 	}
 	glutPostRedisplay();
@@ -165,21 +175,32 @@ void drawLeftLeg() {
 	glColor3f(1.0, 0.0, 0.0);
 	
 	glTranslatef(0.0, -4.0, -0.75); // shift entire arm in -z direction
-	glRotatef((GLfloat)thighAngle, 0.0, 0.0, 1.0);
+	glRotatef((GLfloat)leftThighAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, -1.0, 0.0);
 
 	wireBox(1.0, 2.0, 1.0);
 
-	// Now we are ready to draw the lower arm.  Since the lower arm is attached
-	// to the upper arm we put the code here so that all rotations we do are
-	// relative to the rotation that we already made above to orient the upper
-	// arm.  So, we want to rotate elbow degrees about the z-axis.  But, like
-	// before, the anchor point for the rotation is at the end of the box, so
-	// we translate <1,0,0> before rotating.  But after rotating we have to
-	// position the lower arm at the end of the upper arm, so we have to
-	// translate it <1,0,0> again.
 	glTranslatef(0.0, -1.0, 0.0);
-	glRotatef((GLfloat)calfAngle, 0.0, 0.0, 1.0);
+	glRotatef((GLfloat)leftCalfAngle, 0.0, 0.0, 1.0);
+	glTranslatef(0.0, -1.0, 0.0);
+	wireBox(0.5, 2.0, 0.5);
+
+	glPopMatrix();
+}
+
+void drawRightLeg() {
+	glPushMatrix();
+
+	glColor3f(0.0, 1.0, 0.0);
+
+	glTranslatef(0.0, -4.0, 0.75); // shift entire arm in -z direction
+	glRotatef((GLfloat)rightThighAngle, 0.0, 0.0, 1.0);
+	glTranslatef(0.0, -1.0, 0.0);
+
+	wireBox(1.0, 2.0, 1.0);
+
+	glTranslatef(0.0, -1.0, 0.0);
+	glRotatef((GLfloat)rightCalfAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, -1.0, 0.0);
 	wireBox(0.5, 2.0, 0.5);
 
@@ -207,10 +228,11 @@ void display() {
 	drawTorso();
 
 	drawLeftLeg();
+	drawRightLeg();
 
 	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderX2Angle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderX2Angle);
-
-	
+	printf("elbowAngle: %d\n", elbowAngle);
+	printf("leftThighAngle: %d, rightThighAngle: %d\n", leftThighAngle, rightThighAngle);
 	glFlush();
 }
 
