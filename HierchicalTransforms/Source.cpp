@@ -17,6 +17,11 @@ static int leftThighAngle = 0, leftCalfAngle = 0,
 
 static GLfloat centerX = 0.0, centerY = -2.0, centerZ = 0.0;
 
+const GLfloat floralWhite[] = { 1.0, 0.988, 0.949 };
+const GLfloat paleSilver[] = { 0.80, 0.773, 0.725 };
+const GLfloat blackOlive[] = { 0.251, 0.239, 0.224 };
+const GLfloat eerieBlack[] = { 0.145, 0.141, 0.133 };
+
 // Initialize camera
 Camera camera;
 
@@ -90,14 +95,14 @@ void key(unsigned char key, int, int) {
 void wireBox(GLdouble width, GLdouble height, GLdouble depth) {
 	glPushMatrix();
 	glScalef(width, height, depth);
-	glutWireCube(1.0);
+	glutSolidCube(1.0);
 	glPopMatrix();
 }
 
 void drawLeftArm(GLfloat centerDist=1.0) {
 	glPushMatrix();
 
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3fv(paleSilver);
 	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
 	// the thing about glutWireBox is that normally its origin is in the middle
 	// of the box, but we want the "origin" of our box to be at the left end of
@@ -119,17 +124,19 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	// we translate <0,0,-1> before rotating.  But after rotating we have to
 	// position the lower arm at the end of the upper arm, so we have to
 	// translate it <0,0,-1> again.
+	glColor3fv(floralWhite);
 	glTranslatef(0.0, 0.0, -1.0);
 	glRotatef((GLfloat)elbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, -1.0); // displace
-	wireBox(1.0, 0.4, 2.0);
+	wireBox(0.8, 0.4, 2.0);
 
 	glPopMatrix();
 }
 
 void drawRightArm(GLfloat centerDist=1.0) {
 	glPushMatrix();
-	glColor3f(0.0, 1.0, 0.0);
+
+	glColor3fv(paleSilver);
 
 	// Draw the upper arm, rotated shoulder degrees about the y-axis.  Note that
 	// the thing about glutWireBox is that normally its origin is in the middle
@@ -152,17 +159,18 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	// we translate <0,0,1> before rotating.  But after rotating we have to
 	// position the lower arm at the end of the upper arm, so we have to
 	// translate it <0,0,1> again.
+	glColor3fv(floralWhite);
 	glTranslatef(0.0, 0.0, 1.0);
 	glRotatef((GLfloat)-elbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, 1.0);
-	wireBox(1.0, 0.4, 2.0);
+	wireBox(0.8, 0.4, 2.0);
 
 	glPopMatrix();
 }
 
 void drawTorso() {
 	glPushMatrix();
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3fv(blackOlive);
 	glTranslatef(0.0, -2.0, 0);
 	glRotatef(90.0, 0, 1, 0);
 	wireBox(3.0, 4., 1.0);
@@ -172,7 +180,7 @@ void drawTorso() {
 void drawLeftLeg() {
 	glPushMatrix();
 
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3fv(eerieBlack);
 	
 	glTranslatef(0.0, -4.0, -0.75); // shift entire arm in -z direction
 	glRotatef((GLfloat)leftThighAngle, 0.0, 0.0, 1.0);
@@ -180,6 +188,7 @@ void drawLeftLeg() {
 
 	wireBox(1.0, 2.0, 1.0);
 
+	glColor3fv(floralWhite);
 	glTranslatef(0.0, -1.0, 0.0);
 	glRotatef((GLfloat)leftCalfAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, -1.0, 0.0);
@@ -191,7 +200,7 @@ void drawLeftLeg() {
 void drawRightLeg() {
 	glPushMatrix();
 
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3fv(eerieBlack);
 
 	glTranslatef(0.0, -4.0, 0.75); // shift entire arm in -z direction
 	glRotatef((GLfloat)rightThighAngle, 0.0, 0.0, 1.0);
@@ -199,6 +208,7 @@ void drawRightLeg() {
 
 	wireBox(1.0, 2.0, 1.0);
 
+	glColor3fv(floralWhite);
 	glTranslatef(0.0, -1.0, 0.0);
 	glRotatef((GLfloat)rightCalfAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, -1.0, 0.0);
@@ -225,7 +235,7 @@ void drawHead() {
 // glLoadIdentity makes you lose the camera setting from gluLookAt).
 void display() {
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();
@@ -233,11 +243,9 @@ void display() {
 		centerX, centerY, centerZ,
 		0.0, 1.0, 0.0);
 
-
+	drawTorso();
 	drawLeftArm(1.5);
 	drawRightArm(1.5);
-	drawTorso();
-
 	drawLeftLeg();
 	drawRightLeg();
 
@@ -246,7 +254,7 @@ void display() {
 	printf("shoulderAngle: %d, shoulderOpenAngle: %d, shoulderTwistAngle: %d\n", shoulderAngle, shoulderOpenAngle, shoulderTwistAngle);
 	printf("elbowAngle: %d\n", elbowAngle);
 	printf("leftThighAngle: %d, rightThighAngle: %d\n", leftThighAngle, rightThighAngle);
-	glFlush();
+	glutSwapBuffers();
 }
 
 // Handles the reshape event by setting the viewport so that it takes up the
@@ -264,7 +272,7 @@ void reshape(GLint w, GLint h) {
 // sets the viewing transformation once and for all.  In this application we
 // won't be moving the camera at all, so it makes sense to do this.
 void init() {
-	glShadeModel(GL_FLAT);
+	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//gluLookAt(1, 2, 8
@@ -276,7 +284,7 @@ void init() {
 // does application initialization; enters the main event loop.
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(80, 80);
 	glutInitWindowSize(800, 600);
 	glutCreateWindow("Robot Arm");
