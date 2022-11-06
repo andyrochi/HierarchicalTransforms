@@ -114,7 +114,8 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0); // twist arm
 	glTranslatef(0.0, 0.0, -1.0); // shift towards -z direction
 
-	wireBox(1.0, 0.4, 2.0);
+	//wireBox(1.0, 0.4, 2.0);
+	wireBox(1.2, 0.7, 2.2);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
 	// to the upper arm we put the code here so that all rotations we do are
@@ -128,7 +129,7 @@ void drawLeftArm(GLfloat centerDist=1.0) {
 	glTranslatef(0.0, 0.0, -1.0);
 	glRotatef((GLfloat)elbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, -1.0); // displace
-	wireBox(0.8, 0.4, 2.0);
+	wireBox(0.6, 0.4, 2.0);
 
 	glPopMatrix();
 }
@@ -149,7 +150,8 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	glRotatef((GLfloat)shoulderTwistAngle, 0.0, 0.0, 1.0);
 	glTranslatef(0.0, 0.0, 1.0);
 
-	wireBox(1.0, 0.4, 2.0);
+	//wireBox(1.0, 0.4, 2.0);
+	wireBox(1.2, 0.7, 2.2);
 
 	// Now we are ready to draw the lower arm.  Since the lower arm is attached
 	// to the upper arm we put the code here so that all rotations we do are
@@ -163,7 +165,7 @@ void drawRightArm(GLfloat centerDist=1.0) {
 	glTranslatef(0.0, 0.0, 1.0);
 	glRotatef((GLfloat)-elbowAngle, 0.0, 1.0, 0.0);
 	glTranslatef(0.0, 0.0, 1.0);
-	wireBox(0.8, 0.4, 2.0);
+	wireBox(0.6, 0.4, 2.0);
 
 	glPopMatrix();
 }
@@ -244,8 +246,8 @@ void display() {
 		0.0, 1.0, 0.0);
 
 	drawTorso();
-	drawLeftArm(1.5);
-	drawRightArm(1.5);
+	drawLeftArm(1.5+0.1);
+	drawRightArm(1.5+0.1);
 	drawLeftLeg();
 	drawRightLeg();
 
